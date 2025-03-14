@@ -3,12 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import LoadingSpinner from './LoadingSpinner';
 
-// Mock 3D models data for our demo
+// Updated models data to use local assets
 const mockModels = [
   {
     id: '1',
     name: 'Classic Burger',
-    modelUrl: 'https://cdn.example.com/models/burger.glb', // This is a placeholder URL
+    modelUrl: '/src/assets/models/burger.glb', // Update with your actual file name once added
     price: '$12.99',
     description: 'Juicy beef patty with fresh lettuce, tomato, and our special sauce',
     category: 'Main Course'
@@ -16,7 +16,7 @@ const mockModels = [
   {
     id: '2',
     name: 'Pasta Carbonara',
-    modelUrl: 'https://cdn.example.com/models/pasta.glb', // This is a placeholder URL
+    modelUrl: '/src/assets/models/pasta.glb', // Update with your actual file name once added
     price: '$14.99',
     description: 'Creamy pasta with pancetta, egg, and parmesan cheese',
     category: 'Main Course'
@@ -100,7 +100,8 @@ const ARViewer: React.FC<ARViewerProps> = ({ menuId, itemId }) => {
     }
 
     // In a real implementation, this would launch the AR experience
-    toast.info('AR experience would launch here with the selected model');
+    toast.info(`AR experience would launch here with the model: ${selectedModel.modelUrl}`);
+    console.log('Launching AR with model:', selectedModel.modelUrl);
   };
 
   // Placeholder for the 3D model viewer
@@ -116,7 +117,7 @@ const ARViewer: React.FC<ARViewerProps> = ({ menuId, itemId }) => {
           </div>
           <p className="text-muted-foreground">
             {arSupported ? 
-              '3D model would render here' : 
+              `3D model would render here (${selectedModel.modelUrl})` : 
               'AR not supported on this device'}
           </p>
         </div>
