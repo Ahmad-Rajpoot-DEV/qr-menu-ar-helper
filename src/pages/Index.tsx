@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Camera, ScanLine } from 'lucide-react';
@@ -11,15 +11,40 @@ const Index = () => {
   const navigate = useNavigate();
   const [scannerActive, setScannerActive] = useState(false);
   
-  const handleScan = (data: string) => {
+  const handleScan = useCallback((data: string) => {
     try {
-      // Expected format: https://example.com/menu/{menuId}/{itemId?}
-      const url = new URL(data);
+      console.log('QR data received:', data);
+      
+      // Try to parse as URL first
+      let url: URL;
+      
+      try {
+        // Expected format: https://example.com/menu/{menuId}/{itemId?}
+        url = new URL(data);
+      } catch (err) {
+        // If it's not a valid URL, try to see if it's just a menuId
+        if (data && !data.includes(' ')) {
+          console.log('Treating as direct menuId:', data);
+          // Navigate directly to menu with the scanned text as ID
+          setScannerActive(false);
+          navigate(`/menu/${data}`);
+          toast.success('Menu ID detected');
+          return;
+        } else {
+          throw new Error('Invalid QR format');
+        }
+      }
+      
+      // Handle URL format
       const pathParts = url.pathname.split('/').filter(Boolean);
+      
+      console.log('URL path parts:', pathParts);
       
       if (pathParts.length >= 2 && pathParts[0] === 'menu') {
         const menuId = pathParts[1];
         const itemId = pathParts[2] || undefined;
+        
+        console.log(`Navigating to menu: ${menuId}, item: ${itemId || 'not specified'}`);
         
         // Close scanner
         setScannerActive(false);
@@ -35,7 +60,7 @@ const Index = () => {
       console.error('Error parsing QR data:', err);
       toast.error('Invalid QR code');
     }
-  };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
@@ -88,11 +113,11 @@ const Index = () => {
       </main>
       
       {scannerActive && (
-        <div className="fixed inset-0 z-50 animate-fade-in">
+        <div className="fixed inset-0 z-50 animate-fade-in bg-black">
           <QRScanner onScan={handleScan} isActive={scannerActive} />
           <button
             onClick={() => setScannerActive(false)}
-            className="absolute bottom-10 left-1/2 transform -translate-x-1/2 px-6 py-3 bg-white/90 dark:bg-black/80 text-foreground rounded-full font-medium shadow-lg backdrop-blur-sm"
+            className="absolute bottom-10 left-1/2 transform -translate-x-1/2 px-6 py-3 bg-white/90 dark:bg-black/80 text-foreground rounded-full font-medium shadow-lg backdrop-blur-sm z-50"
           >
             Cancel
           </button>
