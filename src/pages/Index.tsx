@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Camera, ScanLine } from 'lucide-react';
 import NavBar from '../components/NavBar';
 import QRScanner from '../components/QRScanner';
+import QRGenerator from '../components/QRGenerator';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -77,6 +78,11 @@ const Index = () => {
                 View Demo Menu
               </button>
             </div>
+          </div>
+          
+          {/* QR Code Generator for testing */}
+          <div className="mt-12">
+            <QRGenerator defaultUrl="https://example.com/menu/demo1" />
           </div>
         </div>
       </main>
